@@ -1,71 +1,56 @@
-// Service layer containing business logic for product operations.
-const products = require('../database/db');
+const products = require('../database/db')
 
-// Retrieve all products
-const getAllProducts = () => {
-  return products;
-};
+function getAll() {
+  return products
+}
 
-// Retrieve a single product by ID
-const getProductById = (id) => {
-  return products.find((p) => p.id === id) || null;
-};
+function getById(id) {
+  const product = products.find(p => p.id === id)
+  return product || null
+}
 
-// Create a new product with auto-generated ID
-const createProduct = (data) => {
-  const maxId = products.reduce((max, p) => (p.id > max ? p.id : max), 0);
-  const newProduct = {
-    id: maxId + 1,
+function create(data) {
+  const ids = products.map(p => p.id)
+  const newId = ids.length > 0 ? Math.max(...ids) + 1 : 1
+
+  const product = {
+    id: newId,
     name: data.name,
     price: data.price
-  };
-  products.push(newProduct);
-  return newProduct;
-};
+  }
 
-// Full replacement of product data
-const updateProduct = (id, data) => {
-  const index = products.findIndex((p) => p.id === id);
-  if (index === -1) return null;
+  products.push(product)
+  return product
+}
 
-  const updatedProduct = {
+function update(id, data) {
+  const idx = products.findIndex(p => p.id === id)
+  if (idx === -1) return null
+
+  products[idx] = { id, name: data.name, price: data.price }
+  return products[idx]
+}
+
+function patch(id, data) {
+  const idx = products.findIndex(p => p.id === id)
+  if (idx === -1) return null
+
+  const current = products[idx]
+  products[idx] = {
     id,
-    name: data.name,
-    price: data.price
-  };
-  products[index] = updatedProduct;
-  return updatedProduct;
-};
+    name: data.name ?? current.name,
+    price: data.price ?? current.price
+  }
 
-// Partial update of product data
-const patchProduct = (id, data) => {
-  const index = products.findIndex((p) => p.id === id);
-  if (index === -1) return null;
+  return products[idx]
+}
 
-  const existing = products[index];
-  const updatedProduct = {
-    id,
-    name: data.name !== undefined ? data.name : existing.name,
-    price: data.price !== undefined ? data.price : existing.price
-  };
-  products[index] = updatedProduct;
-  return updatedProduct;
-};
+function remove(id) {
+  const idx = products.findIndex(p => p.id === id)
+  if (idx === -1) return false
 
-// Delete product by ID
-const deleteProduct = (id) => {
-  const index = products.findIndex((p) => p.id === id);
-  if (index === -1) return false;
+  products.splice(idx, 1)
+  return true
+}
 
-  products.splice(index, 1);
-  return true;
-};
-
-module.exports = {
-  getAllProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  patchProduct,
-  deleteProduct
-};
+module.exports = { getAll, getById, create, update, patch, remove }

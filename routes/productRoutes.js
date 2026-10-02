@@ -1,18 +1,15 @@
-// Product router mapping endpoints to cache/invalidation middlewares and controllers.
-const express = require('express');
-const router = express.Router();
-const productController = require('../controllers/productController');
-const { cacheMiddleware } = require('../middleware/cache');
-const invalidateCache = require('../middleware/invalidateCache');
+const express = require('express')
+const router = express.Router()
+const controller = require('../controllers/productController')
+const { cacheMiddleware } = require('../middleware/cache')
+const invalidateCache = require('../middleware/invalidateCache')
 
-// GET routes with caching middleware
-router.get('/', cacheMiddleware, productController.getAll);
-router.get('/:id', cacheMiddleware, productController.getById);
+router.get('/', cacheMiddleware, controller.getAll)
+router.get('/:id', cacheMiddleware, controller.getById)
 
-// Write routes with cache invalidation middleware
-router.post('/', invalidateCache, productController.create);
-router.put('/:id', invalidateCache, productController.update);
-router.patch('/:id', invalidateCache, productController.patch);
-router.delete('/:id', invalidateCache, productController.remove);
+router.post('/', invalidateCache, controller.create)
+router.put('/:id', invalidateCache, controller.update)
+router.patch('/:id', invalidateCache, controller.patch)
+router.delete('/:id', invalidateCache, controller.remove)
 
-module.exports = router;
+module.exports = router

@@ -1,44 +1,34 @@
-// In-memory cache middleware for GET routes with a 1-minute TTL.
-const cache = new Map();
-const TTL = 60 * 1000; // 60 seconds (1 minute)
+const cache = new Map()
+const TTL = 60 * 1000 // 1 min
 
 const cacheMiddleware = (req, res, next) => {
-  const key = req.originalUrl;
-  const entry = cache.get(key);
-  const now = Date.now();
+  const key = req.originalUrl
+  const hit = cache.get(key)
 
-  if (entry) {
-    if (now - entry.createdAt < TTL) {
-      res.setHeader('X-Cache', 'HIT');
-      return res.json(entry.data);
+  if (hit) {
+    const age = Date.now() - hit.createdAt
+    if (age < TTL) {
+      res.setHeader('X-Cache', 'HIT')
+      return res.json(hit.data)
     }
-    // Expired entry - remove from cache
-    cache.delete(key);
+    // expired, drop it
+    cache.delete(key)
   }
 
-  // Cache MISS
-  res.setHeader('X-Cache', 'MISS');
+  res.setHeader('X-Cache', 'MISS')
 
-  const originalJson = res.json.bind(res);
-  res.json = (data) => {
-    // Only cache successful (200) responses
+  // intercept res.json to store the response
+  const originalJson = res.json.bind(res)
+  res.json = (body) => {
     if (res.statusCode === 200) {
-      cache.set(key, {
-        data,
-        createdAt: Date.now()
-      });
+      cache.set(key, { data: body, createdAt: Date.now() })
     }
-    return originalJson(data);
-  };
+    return originalJson(body)
+  }
 
-  next();
-};
+  next()
+}
 
-const clearCache = () => {
-  cache.clear();
-};
+const clearCache = () => cache.clear()
 
-module.exports = {
-  cacheMiddleware,
-  clearCache
-};
+module.exports = { cacheMiddleware, clearCache }

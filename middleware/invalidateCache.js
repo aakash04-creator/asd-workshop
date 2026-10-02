@@ -1,13 +1,13 @@
-// Middleware to invalidate all cache entries when a write request (POST, PUT, PATCH, DELETE) succeeds with a 2xx status.
-const { clearCache } = require('./cache');
+const { clearCache } = require('./cache')
 
 const invalidateCache = (req, res, next) => {
   res.on('finish', () => {
+    // only clear if the write actually worked
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      clearCache();
+      clearCache()
     }
-  });
-  next();
-};
+  })
+  next()
+}
 
-module.exports = invalidateCache;
+module.exports = invalidateCache
