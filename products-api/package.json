@@ -1,0 +1,12 @@
+{
+  "name": "products-api",
+  "version": "1.0.0",
+  "description": "Node.js + Express Products API with layered architecture and in-memory caching",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

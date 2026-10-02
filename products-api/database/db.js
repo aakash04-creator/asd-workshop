@@ -1,0 +1,9 @@
+// Database module exporting the initial in-memory seed data array.
+const products = [
+  { "id": 1, "name": "Keyboard", "price": 49.99 },
+  { "id": 2, "name": "Mouse", "price": 19.99 },
+  { "id": 3, "name": "Monitor", "price": 199 },
+  { "id": 4, "name": "Mouse", "price": 19 }
+];
+
+module.exports = products;
